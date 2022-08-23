@@ -20,7 +20,8 @@ public class IngredientService : IIngredientService
 
     public IQueryable<IngredientDto> Get()
     {
-        return _ingredientRepository.Get().ProjectTo<IngredientDto>(_mapper.ConfigurationProvider);
+        return _ingredientRepository.Get()
+            .ProjectTo<IngredientDto>(_mapper.ConfigurationProvider);
     }
 
     public async Task<IEnumerable<IngredientDto>> FindByName(string name)
@@ -50,7 +51,7 @@ public class IngredientService : IIngredientService
 
     public async Task DeleteAsync(string id)
     {
-        var ingredient = GetAsync(id);
+        var ingredient = await GetAsync(id);
         if (ingredient is null)
         {
             throw new ArgumentException("Указанный идентификатор не найден");

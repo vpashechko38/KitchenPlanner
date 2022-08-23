@@ -17,8 +17,11 @@ public class IngredientProfile : Profile
                 opt => opt.MapFrom(src => src.Description));
 
         CreateMap<IngredientDto, IngredientModel>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
+            .ForMember(dest => dest.Id, 
+                opt => opt.Ignore())
+            .ForMember(dest => dest.Name, 
+                opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.Description, 
+                opt => opt.MapFrom(src => src.Description));
     }
 }

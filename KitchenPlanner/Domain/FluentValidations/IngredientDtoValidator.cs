@@ -7,7 +7,11 @@ public class IngredientDtoValidator : AbstractValidator<IngredientDto>
 {
     public IngredientDtoValidator()
     {
-        RuleFor(x => x.Description).NotNull().MaximumLength(255);
-        RuleFor(x => x.Name).NotNull().MaximumLength(255);
+        RuleFor(x => x.Description)
+            .NotNull()
+            .MaximumLength(255);
+        RuleFor(x => x.Name)
+            .NotNull()
+            .MaximumLength(255);
     }
 }

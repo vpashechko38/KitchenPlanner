@@ -1,7 +1,10 @@
 using System.Reflection;
 using KitchenPlanner.Data;
+using KitchenPlanner.Data.Context;
 using KitchenPlanner.Domain;
 using KitchenPlanner.Domain.MapperProfiles;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +17,13 @@ builder.Services.AddDomain();
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(IngredientProfile)));
 
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<IdentityContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("identity")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<IdentityContext>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -40,6 +50,8 @@ var app = builder.Build();
 app.MapSwagger();
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 

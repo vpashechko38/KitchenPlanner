@@ -2,6 +2,8 @@
 using KitchenPlanner.Api.Dtos;
 using KitchenPlanner.Domain.Services;
 using KitchenPlanner.Domain.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KitchenPlanner.Api.Controllers;
@@ -61,11 +63,12 @@ public class IngredientController : ControllerBase
     /// <p/> "description": "Зеленый длинный"<br/>
     /// <p/> }</code>
     /// </remarks>
+    [Authorize]
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<IActionResult> AddAsync(IngredientDto ingredientDto)
+    public async Task<IActionResult> AddAsync([FromBody]IngredientDto ingredientDto)
     {
         await _ingredientService.AddAsync(ingredientDto);
         return Ok();

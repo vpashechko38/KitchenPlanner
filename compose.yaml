@@ -10,3 +10,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: login
       MONGO_INITDB_ROOT_PASSWORD: pwd
+  
+  postgre:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432"
