@@ -3,13 +3,8 @@
 /// <summary>
 /// Ингредиент
 /// </summary>
-public class IngredientModel
+public class IngredientModel : BaseModel
 {
-    /// <summary>
-    /// Идентификатор
-    /// </summary>
-    public string Id { get; set; }
-    
     /// <summary>
     /// Название
     /// </summary>

@@ -18,7 +18,11 @@ public class RecipeService : IRecipeService
     private readonly IMapper _mapper;
     private readonly IRecipeValidator _recipeValidator;
 
-    public RecipeService(IGenericRepository<RecipeModel> recipeRepository, IMapper mapper, IGenericRepository<IngredientModel> ingredientRepository, IRecipeValidator recipeValidator)
+    public RecipeService(
+        IGenericRepository<RecipeModel> recipeRepository,
+        IMapper mapper,
+        IGenericRepository<IngredientModel> ingredientRepository,
+        IRecipeValidator recipeValidator)
     {
         _recipeRepository = recipeRepository;
         _mapper = mapper;
@@ -92,13 +96,15 @@ public class RecipeService : IRecipeService
 
     public async Task AddIngredientAsync(string recipeId, string ingredientId)
     {
-        var ingredient = _ingredientRepository.Get().SingleOrDefault(x => x.Id == ingredientId);
+        var ingredient = _ingredientRepository.Get()
+            .SingleOrDefault(x => x.Id == ingredientId);
         if (ingredient == null)
         {
             throw new ArgumentException("Ingredient not found");
         }
 
-        var recipe = _recipeRepository.Get().SingleOrDefault(x => x.Id == recipeId);
+        var recipe = _recipeRepository.Get()
+            .SingleOrDefault(x => x.Id == recipeId);
         if (recipe == null)
         {
             throw new ArgumentException("recipe not found");

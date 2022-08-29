@@ -1,5 +1,8 @@
 ﻿namespace KitchenPlanner.Domain.Enums;
 
+/// <summary>
+/// Категория блюда
+/// </summary>
 public enum Category
 {
     /// <summary>

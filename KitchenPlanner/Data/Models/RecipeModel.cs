@@ -7,13 +7,8 @@ namespace KitchenPlanner.Data.Models;
 /// <summary>
 /// Рецепт
 /// </summary>
-public class RecipeModel
+public class RecipeModel : BaseModel
 {
-    /// <summary>
-    /// Идентификатор
-    /// </summary>
-    public string Id { get; set; }
-
     public string Name { get; set; }
 
     public List<IngredientModel> Ingredients { get; set; }

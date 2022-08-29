@@ -53,4 +53,16 @@ public class AccountController : ControllerBase
         await _signInManager.SignOutAsync();
         return Ok();
     }
+
+    [HttpPost("Password/Change")]
+    public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordDto passwordDto)
+    {
+        var user = await _userManager.FindByEmailAsync(passwordDto.Email);
+        var result = await _userManager.ChangePasswordAsync(user, passwordDto.OldPassword, passwordDto.NewPassword);
+        if (result.Succeeded)
+        {
+            return Ok();
+        }
+        return BadRequest("чето не то");
+    }
 }
