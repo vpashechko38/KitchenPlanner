@@ -20,7 +20,7 @@ public interface IIngredientService
     /// <summary>
     /// Получение ингридиента по идентификатора
     /// </summary>
-    Task<IngredientDto> GetAsync(string id);
+    Task<IngredientDto> GetAsync(Guid id);
     
     /// <summary>
     /// Создание ингридиента
@@ -30,10 +30,10 @@ public interface IIngredientService
     /// <summary>
     /// Обновление ингридиента
     /// </summary>
-    Task UpdateAsync(string id, IngredientDto ingredientDto);
+    Task UpdateAsync(Guid id, IngredientDto ingredientDto);
     
     /// <summary>
     /// Удаление ингридиента
     /// </summary>
-    Task DeleteAsync(string id);
+    Task DeleteAsync(Guid id);
 }

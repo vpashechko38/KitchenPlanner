@@ -1,36 +1,27 @@
-﻿using KitchenPlanner.Data.Configuration;
-using KitchenPlanner.Data.Models;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
+﻿using KitchenPlanner.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace KitchenPlanner.Data.Context;
 
-public class DataContext
+public class DataContext : DbContext
 {
-    private readonly Dictionary<string, string> _collectionNames = new Dictionary<string, string>
-    {
-        { typeof(IngredientModel).FullName, "ingredients" },
-        { typeof(RecipeModel).FullName, "recipes" }
-    };
+    public DbSet<IngredientModel> Ingredients { get; set; }
 
-    private readonly IMongoDatabase _database;
+    public DbSet<RecipeModel> Recipes { get; set; }
 
-    public DataContext(IOptions<MongoOptions> options)
+    public DataContext(DbContextOptions<DataContext> options) : base(options)
+    { }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        ModelConfiguration.Register();
-        var mongoClient = new MongoClient(options.Value.ConnectionString);
-        _database = mongoClient.GetDatabase(options.Value.DatabaseName);
+        optionsBuilder.UseLazyLoadingProxies();
     }
 
-    public IMongoCollection<T> GetCollection<T>()
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var typeName = typeof(T).FullName;
-        var collectionName = _collectionNames.FirstOrDefault(x => x.Key == typeName).Value;
-        if (collectionName == null)
-        {
-            throw new NotSupportedException($"Тип {typeName} не поддерживается.");
-        }
-
-        return _database.GetCollection<T>(collectionName);
+        modelBuilder.Entity<RecipeModel>()
+            .HasMany(x => x.Ingredients)
+            .WithMany(x => x.Recipes)
+            .UsingEntity(x => x.ToTable("IngredientsRecipes"));
     }
 }

@@ -47,7 +47,7 @@ public class IngredientController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(IngredientDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetAsync([FromRoute]string id)
+    public async Task<IActionResult> GetAsync([FromRoute]Guid id)
     {
         var result = await _ingredientService.GetAsync(id);
         return Ok(result);
@@ -63,7 +63,6 @@ public class IngredientController : ControllerBase
     /// <p/> "description": "Зеленый длинный"<br/>
     /// <p/> }</code>
     /// </remarks>
-    [Authorize]
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -88,7 +87,7 @@ public class IngredientController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<IActionResult> UpdateAsync([FromRoute]string id, [FromBody]IngredientDto ingredientDto)
+    public async Task<IActionResult> UpdateAsync([FromRoute]Guid id, [FromBody]IngredientDto ingredientDto)
     {
         await _ingredientService.UpdateAsync(id, ingredientDto);
         return Ok();
@@ -100,7 +99,7 @@ public class IngredientController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> DeleteAsync([FromRoute]string id)
+    public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)
     {
         await _ingredientService.DeleteAsync(id);
         return Ok();

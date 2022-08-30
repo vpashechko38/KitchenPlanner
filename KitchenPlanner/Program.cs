@@ -18,9 +18,6 @@ builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(IngredientProfile)));
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<IdentityContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("identity")));
-
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<IdentityContext>();
 

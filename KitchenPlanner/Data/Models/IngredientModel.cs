@@ -14,4 +14,6 @@ public class IngredientModel : BaseModel
     /// Описание
     /// </summary>
     public string Description { get; set; }
+
+    public virtual List<RecipeModel> Recipes { get; set; }
 }

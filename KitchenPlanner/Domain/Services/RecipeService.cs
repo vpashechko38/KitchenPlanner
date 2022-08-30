@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using KitchenPlanner.Api.Dtos;
+using KitchenPlanner.Api.Dtos.Recipe;
 using KitchenPlanner.Data.Models;
 using KitchenPlanner.Data.Repositories;
 using KitchenPlanner.Domain.Enums;
@@ -13,32 +13,29 @@ namespace KitchenPlanner.Domain.Services;
 
 public class RecipeService : IRecipeService
 {
-    private readonly IGenericRepository<RecipeModel> _recipeRepository;
-    private readonly IGenericRepository<IngredientModel> _ingredientRepository;
+    private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
     private readonly IRecipeValidator _recipeValidator;
 
     public RecipeService(
-        IGenericRepository<RecipeModel> recipeRepository,
+        IUnitOfWork uow,
         IMapper mapper,
-        IGenericRepository<IngredientModel> ingredientRepository,
         IRecipeValidator recipeValidator)
     {
-        _recipeRepository = recipeRepository;
+        _uow = uow;
         _mapper = mapper;
-        _ingredientRepository = ingredientRepository;
         _recipeValidator = recipeValidator;
     }
 
     public IEnumerable<RecipeDto> Get()
     {
-        var recipes = _recipeRepository.Get().ToList();
+        var recipes = _uow.Recipes.Get().ToList();
         return _mapper.Map<IEnumerable<RecipeDto>>(recipes);
     }
 
-    public async Task<RecipeDto> GetAsync(string id)
+    public async Task<RecipeDto> GetAsync(Guid id)
     {
-        var recipe = _recipeRepository.Get()
+        var recipe = _uow.Recipes.Get()
             .SingleOrDefault(x => x.Id == id);
 
         return _mapper.Map<RecipeDto>(recipe);
@@ -47,38 +44,61 @@ public class RecipeService : IRecipeService
     /// <inheritdoc />
     public IEnumerable<RecipeDto> Get(int category)
     {
-        return _recipeRepository.Get()
+        return _uow.Recipes.Get()
             .Where(x=>x.Category == (Category)category)
             .ProjectTo<RecipeDto>(_mapper.ConfigurationProvider);
     }
 
-    public async Task AddAsync(RecipeDto recipeDto)
+    public async Task AddAsync(CreateRecipeDto recipeDto)
     {
-        var validationResult = _recipeValidator.ValidateAdd(recipeDto);
-        if (!validationResult)
-        {
-            throw new ValidationException("ПНХ");
-        }
-
-        var ingredientIds = recipeDto.Ingredients.Select(x => x.Id);
-        var ingredients = _ingredientRepository.Get()
-            .Where(x => ingredientIds.Contains(x.Id))
-            .ToList();
+        // var validationResult = _recipeValidator.ValidateAdd(recipeDto);
+        // if (!validationResult)
+        // {
+        //     throw new ValidationException("ПНХ");
+        // }
         
         var recipe = _mapper.Map<RecipeModel>(recipeDto);
+
+        var ingredients = _uow.Ingredients
+            .Get()
+            .Where(x => recipeDto.Ingredients.Contains(x.Id))
+            .ToList();
+        
         recipe.Ingredients = ingredients;
-        await _recipeRepository.AddAsync(recipe);
+
+        await _uow.Recipes.AddAsync(recipe);
+        await _uow.SaveAsync();
     }
 
-    public async Task UpdateAsync(string id, RecipeDto recipeDto)
+    public async Task UpdateAsync(Guid id, CreateRecipeDto recipeDto)
     {
-        var recipe = _mapper.Map<RecipeModel>(recipeDto);
-        await _recipeRepository.UpdateAsync(id, recipe);
+        var recipe = await _uow.Recipes
+            .Get()
+            .SingleOrDefaultAsync(x => x.Id == id);
+        if (recipe is null)
+        {
+            throw new ArgumentNullException();
+        }
+        
+        var ingredients = _uow.Ingredients
+            .Get()
+            .Where(x => recipeDto.Ingredients.Contains(x.Id))
+            .ToList();
+
+        recipe.Ingredients.Clear();
+        recipe.Ingredients.AddRange(ingredients);
+
+        recipe.Category = recipeDto.Category;
+        recipe.Description = recipeDto.Description;
+        recipe.Name = recipeDto.Name;
+        recipe.CookingTime = recipeDto.CookingTime;
+
+        await _uow.SaveAsync();
     }
 
-    public async Task DeleteIngredientAsync(string id, string ingredientId)
+    public async Task DeleteIngredientAsync(Guid id, Guid ingredientId)
     {
-        var recipe = _recipeRepository.Get().SingleOrDefault(x => x.Id == id);
+        var recipe = _uow.Recipes.Get().SingleOrDefault(x => x.Id == id);
         if (recipe == null)
         {
             throw new ValidationException("Все ты врешь, нет такого айди");
@@ -91,19 +111,19 @@ public class RecipeService : IRecipeService
         }
         
         recipe.Ingredients.Remove(ingredient);
-        await _recipeRepository.UpdateAsync(id, recipe);
+        await _uow.SaveAsync();
     }
 
-    public async Task AddIngredientAsync(string recipeId, string ingredientId)
+    public async Task AddIngredientAsync(Guid recipeId, Guid ingredientId)
     {
-        var ingredient = _ingredientRepository.Get()
+        var ingredient = _uow.Ingredients.Get()
             .SingleOrDefault(x => x.Id == ingredientId);
         if (ingredient == null)
         {
             throw new ArgumentException("Ingredient not found");
         }
 
-        var recipe = _recipeRepository.Get()
+        var recipe = _uow.Recipes.Get()
             .SingleOrDefault(x => x.Id == recipeId);
         if (recipe == null)
         {
@@ -111,11 +131,12 @@ public class RecipeService : IRecipeService
         }
         
         recipe.Ingredients.Add(ingredient);
-        await _recipeRepository.UpdateAsync(recipeId, recipe);
+        await _uow.SaveAsync();
     }
 
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(Guid id)
     {
-        await _recipeRepository.DeleteAsync(id);
+        await _uow.Recipes.DeleteAsync(id);
+        await _uow.SaveAsync();
     }
 }

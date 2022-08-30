@@ -1,4 +1,5 @@
 ﻿using KitchenPlanner.Api.Dtos;
+using KitchenPlanner.Api.Dtos.Recipe;
 using KitchenPlanner.Data.Models;
 using KitchenPlanner.Data.Repositories;
 
@@ -6,14 +7,11 @@ namespace KitchenPlanner.Domain.Validations;
 
 public class RecipeValidator : IRecipeValidator
 {
-    private readonly IGenericRepository<RecipeModel> _recipeRepository;
-    private readonly IGenericRepository<IngredientModel> _ingredientRepository;
+    private readonly IUnitOfWork _uow;
 
-    public RecipeValidator(IGenericRepository<RecipeModel> recipeRepository,
-        IGenericRepository<IngredientModel> ingredientRepository)
+    public RecipeValidator(IUnitOfWork uow)
     {
-        _recipeRepository = recipeRepository;
-        _ingredientRepository = ingredientRepository;
+        _uow = uow;
     }
 
     public bool ValidateAdd(RecipeDto recipeDto)
@@ -23,15 +21,15 @@ public class RecipeValidator : IRecipeValidator
             return false;
         }
         
-        var ingredientIds = recipeDto.Ingredients.Select(y => y.Id);
-        var ingredients = _ingredientRepository.Get().Where(x => ingredientIds.Contains(x.Id));
-        if (ingredients.Count() != recipeDto.Ingredients.Count)
-        {
-            //todo впихнуть тексты ошибок
-            return false;
-        }
+        // var ingredientIds = recipeDto.Ingredients.Select(y => y.Id);
+        // var ingredients = _ingredientRepository.Get().Where(x => ingredientIds.Contains(x.Id));
+        // if (ingredients.Count() != recipeDto.Ingredients.Count)
+        // {
+        //     //todo впихнуть тексты ошибок
+        //     return false;
+        // }
 
-        var recipeByName = _recipeRepository.Get().FirstOrDefault(x => x.Name == recipeDto.Name);
+        var recipeByName = _uow.Recipes.Get().FirstOrDefault(x => x.Name == recipeDto.Name);
         if (recipeByName != null)
         {
             return false;

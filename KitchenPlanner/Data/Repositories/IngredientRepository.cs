@@ -1,52 +1,52 @@
-﻿using KitchenPlanner.Data.Models;
-using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using KitchenPlanner.Data.Context;
+using KitchenPlanner.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace KitchenPlanner.Data.Repositories;
 
 /// <inheritdoc />
 public class IngredientRepository : IGenericRepository<IngredientModel>
 {
-    private readonly IMongoCollection<IngredientModel> _collection;
+    private readonly DataContext _context;
 
-    public IngredientRepository(IMongoCollection<IngredientModel> collection)
+    public IngredientRepository(DataContext context)
     {
-        _collection = collection;
+        _context = context;
     }
 
     public async Task<IEnumerable<IngredientModel>> FindByName(string name)
     {
-        var filter = Builders<IngredientModel>
-            .Filter.Regex(x => x.Name, new BsonRegularExpression(name));
-        return await _collection.Find(filter).ToListAsync();
+        //todo add regexp to find by part name
+        return new IngredientModel[0];
     }
 
     /// <inheritdoc />
     public IQueryable<IngredientModel> Get()
     {
-        return _collection.AsQueryable();
+        return _context.Ingredients.AsQueryable();
     }
 
     /// <inheritdoc />
     public async Task AddAsync(IngredientModel entity)
     {
-        await _collection.InsertOneAsync(entity);
+        await _context.Ingredients.AddAsync(entity);
     }
 
     /// <inheritdoc />
-    public async Task<IngredientModel> UpdateAsync(string id, IngredientModel entity)
+    public async Task<IngredientModel> UpdateAsync(Guid id, IngredientModel entity)
     {
-        var update = Builders<IngredientModel>.Update
-            .Set(x => x.Name, entity.Name)
-            .Set(x => x.Description, entity.Description);
+        // var update = Builders<IngredientModel>.Update
+        //     .Set(x => x.Name, entity.Name)
+        //     .Set(x => x.Description, entity.Description);
 
-        await _collection.UpdateOneAsync(id, update);
+        //await _context.UpdateOneAsync(id, update);
         return entity;
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(Guid id)
     {
-        await _collection.DeleteOneAsync(id);
+        var ingredient = await Get().FirstOrDefaultAsync(x => x.Id == id);
+        _context.Ingredients.Remove(ingredient);
     }
 }

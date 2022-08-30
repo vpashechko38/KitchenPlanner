@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using KitchenPlanner.Api.Dtos;
+using KitchenPlanner.Api.Dtos.Recipe;
 using KitchenPlanner.Data.Models;
 
 namespace KitchenPlanner.Domain.MapperProfiles;
@@ -36,7 +37,23 @@ public class RecipeProfile : Profile
             .ForMember(dest => dest.PictureId,
                 opt => opt.MapFrom(src => src.PictureId))
             .ForMember(dest=>dest.Ingredients,
-                opt => opt.MapFrom(src=>src.Ingredients))
+                opt => opt.Ignore())
+            .ForMember(dest => dest.Id,
+                opt => opt.Ignore());
+        
+        CreateMap<CreateRecipeDto, RecipeModel>()
+            .ForMember(dest => dest.Description,
+                opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.Name,
+                opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.Category,
+                opt => opt.MapFrom(src => src.Category))
+            .ForMember(dest => dest.CookingTime,
+                opt => opt.MapFrom(src => src.CookingTime))
+            .ForMember(dest => dest.PictureId,
+                opt => opt.MapFrom(src => src.PictureId))
+            .ForMember(dest=>dest.Ingredients,
+                opt => opt.Ignore())
             .ForMember(dest => dest.Id,
                 opt => opt.Ignore());
     }

@@ -1,23 +1,18 @@
-﻿using KitchenPlanner.Domain.Enums;
+using KitchenPlanner.Domain.Enums;
 
-namespace KitchenPlanner.Api.Dtos;
+namespace KitchenPlanner.Api.Dtos.Recipe;
 
 /// <summary>
 /// Рецепт
 /// </summary>
-public class RecipeDto
+public class CreateRecipeDto
 {
-    /// <summary>
-    /// Идентификатор
-    /// </summary>
-    public string? Id { get; set; }
-
     public string Name { get; set; }
 
     /// <summary>
     /// Ингридиенты
     /// </summary>
-    public List<IngredientDto> Ingredients { get; set; }
+    public List<Guid> Ingredients { get; set; }
     
     /// <summary>
     /// Описание
@@ -27,7 +22,7 @@ public class RecipeDto
     /// <summary>
     /// Идентификатор картинки
     /// </summary>
-    public string PictureId { get; set; }
+    public Guid PictureId { get; set; }
     
     /// <summary>
     /// Категория

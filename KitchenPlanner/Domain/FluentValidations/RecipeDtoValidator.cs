@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using KitchenPlanner.Api.Dtos;
+using KitchenPlanner.Api.Dtos.Recipe;
 
 namespace KitchenPlanner.Domain.FluentValidations;
 

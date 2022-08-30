@@ -11,32 +11,32 @@ namespace KitchenPlanner.Domain.Services;
 public class IngredientService : IIngredientService
 {
     private readonly IMapper _mapper;
-    private readonly IGenericRepository<IngredientModel> _ingredientRepository;
+    private readonly IUnitOfWork _uow;
 
-    public IngredientService(IMapper mapper, IGenericRepository<IngredientModel> ingredientRepository)
+    public IngredientService(IMapper mapper, IUnitOfWork uow)
     {
         _mapper = mapper;
-        _ingredientRepository = ingredientRepository;
+        _uow = uow;
     }
 
     /// <inheritdoc />
     public IQueryable<IngredientDto> Get()
     {
-        return _ingredientRepository.Get()
+        return _uow.Ingredients.Get()
             .ProjectTo<IngredientDto>(_mapper.ConfigurationProvider);
     }
 
     /// <inheritdoc />
     public async Task<IEnumerable<IngredientDto>> FindByName(string name)
     {
-        var ingredients = await _ingredientRepository.FindByName(name);
+        var ingredients = await _uow.Ingredients.FindByName(name);
         return _mapper.Map<IEnumerable<IngredientDto>>(ingredients);
     }
 
     /// <inheritdoc />
-    public async Task<IngredientDto> GetAsync(string id)
+    public async Task<IngredientDto> GetAsync(Guid id)
     {
-        var ingredient = _ingredientRepository.Get()
+        var ingredient = _uow.Ingredients.Get()
             .SingleOrDefault(x => x.Id == id);
         return _mapper.Map<IngredientDto>(ingredient);
     }
@@ -45,18 +45,18 @@ public class IngredientService : IIngredientService
     public async Task AddAsync(IngredientDto ingredientDto)
     {
         var ingredient = _mapper.Map<IngredientModel>(ingredientDto);
-        await _ingredientRepository.AddAsync(ingredient);
+        await _uow.Ingredients.AddAsync(ingredient);
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(string id, IngredientDto ingredientDto)
+    public async Task UpdateAsync(Guid id, IngredientDto ingredientDto)
     {
         var ingredient = _mapper.Map<IngredientModel>(ingredientDto);
-        await _ingredientRepository.UpdateAsync(id, ingredient);
+        await _uow.Ingredients.UpdateAsync(id, ingredient);
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(string id)
+    public async Task DeleteAsync(Guid id)
     {
         var ingredient = await GetAsync(id);
         if (ingredient is null)
@@ -64,6 +64,6 @@ public class IngredientService : IIngredientService
             throw new ArgumentException("Указанный идентификатор не найден");
         }
 
-        await _ingredientRepository.DeleteAsync(id);
+        await _uow.Ingredients.DeleteAsync(id);
     }
 }

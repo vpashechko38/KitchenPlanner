@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using KitchenPlanner.Api.Dtos;
+using KitchenPlanner.Api.Dtos.Recipe;
 using KitchenPlanner.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +35,7 @@ public class RecipeController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(IngredientDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> GetAsync([FromRoute]string id)
+    public async Task<IActionResult> GetAsync([FromRoute]Guid id)
     {
         var result = await _recipeService.GetAsync(id);
         return Ok(result);
@@ -78,7 +79,7 @@ public class RecipeController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<IActionResult> AddAsync(RecipeDto recipeDto)
+    public async Task<IActionResult> AddAsync(CreateRecipeDto recipeDto)
     {
         await _recipeService.AddAsync(recipeDto);
         return Ok();
@@ -100,7 +101,7 @@ public class RecipeController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<IActionResult> UpdateAsync([FromRoute]string id, [FromBody]RecipeDto recipeDto)
+    public async Task<IActionResult> UpdateAsync([FromRoute]Guid id, [FromBody]CreateRecipeDto recipeDto)
     {
         await _recipeService.UpdateAsync(id, recipeDto);
         return Ok();
@@ -112,21 +113,21 @@ public class RecipeController : ControllerBase
     [HttpDelete("{id}")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> DeleteAsync([FromRoute]string id)
+    public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)
     {
         await _recipeService.DeleteAsync(id);
         return Ok();
     }
 
     [HttpDelete("{recipeId}/ingredient/{ingredientId}")]
-    public async Task<IActionResult> RemoveIngredient([FromRoute]string recipeId, [FromRoute]string ingredientId)
+    public async Task<IActionResult> RemoveIngredient([FromRoute]Guid recipeId, [FromRoute]Guid ingredientId)
     {
         await _recipeService.DeleteIngredientAsync(recipeId, ingredientId);
         return Ok();
     }
 
     [HttpPost("{recipeId}/ingredient/{ingredientId}")]
-    public async Task<IActionResult> AddIngredient([FromRoute]string recipeId, [FromRoute]string ingredientId)
+    public async Task<IActionResult> AddIngredient([FromRoute]Guid recipeId, [FromRoute]Guid ingredientId)
     {
         await _recipeService.AddIngredientAsync(recipeId, ingredientId);
         return Ok();

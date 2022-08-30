@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KitchenPlanner.Migrations
 {
     [DbContext(typeof(IdentityContext))]
-    [Migration("20220828194718_initial")]
-    partial class initial
+    [Migration("20220829200645_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

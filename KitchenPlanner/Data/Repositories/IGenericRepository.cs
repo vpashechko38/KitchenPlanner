@@ -23,11 +23,11 @@ public interface IGenericRepository<T>
     /// </summary>
     /// <param name="id">Идентификатор обновляемой сущности</param>
     /// <param name="entity">Новые данные обновляемой сущности</param>
-    Task<T> UpdateAsync(string id,T entity);
+    Task<T> UpdateAsync(Guid id,T entity);
     
     /// <summary>
     /// Удалить сущность
     /// </summary>
     /// <param name="id">Идентификатор удаляемой сущности</param>
-    Task DeleteAsync(string id);
+    Task DeleteAsync(Guid id);
 }
